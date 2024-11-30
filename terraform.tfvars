@@ -23,8 +23,6 @@ default_tags = {
 }
 
 # Container Configuration
-# container_cpu    = 256
-# container_memory = 512
 container_cpu    = 1024  # 1 vCPU
 container_memory = 2048  # 2GB RAM
 container_port   = 80
@@ -39,3 +37,65 @@ db_port      = 3306
 db_name      = "collage"
 db_username  = "admin"
 db_password  = "MLCcaringal000"
+
+# Laravel Environment Variables
+app_name     = "Laravel"
+app_key      = "base64:q2ktJOez5JCl9ON6bU18DBxCofhalJth5oQK9c1mAy0="
+app_url      = "http://127.0.0.1:8000"
+app_debug    = "false"
+
+# Logging Configuration
+log_channel              = "stack"
+log_deprecations_channel = "null"
+log_level               = "debug"
+
+# Cache and Session Configuration
+broadcast_driver  = "log"
+cache_driver     = "file"
+filesystem_disk  = "s3"
+queue_connection = "sync"
+session_driver   = "file"
+session_lifetime = "120"
+
+# Redis Configuration
+redis_host     = "127.0.0.1"
+redis_password = "null"
+redis_port     = "6379"
+
+# Memcached Configuration
+memcached_host = "127.0.0.1"
+
+# Mail Configuration
+mail_mailer      = "smtp"
+mail_host        = "mailpit"
+mail_port        = "1025"
+mail_username    = "null"
+mail_password    = "null"
+mail_encryption  = "null"
+mail_from_address = "hello@example.com"
+mail_from_name   = "Laravel"
+
+# AWS S3 Configuration
+aws_access_key_id     = "AKIA5VTFTV77MOINUVSC"
+aws_secret_access_key = "eeBUTtbSmovqoLBV/roYzMcvjKUAQ7lVVnUc8As8"
+aws_bucket            = "caringaldevops"
+aws_use_path_style_endpoint = "false"
+
+# CloudFront Configuration
+cloudfront_domain = "enrollment.martincaringal.co.nz"
+
+# Pusher Configuration
+pusher_app_id      = ""
+pusher_app_key     = ""
+pusher_app_secret  = ""
+pusher_host        = ""
+pusher_port        = "443"
+pusher_scheme      = "https"
+pusher_app_cluster = "mt1"
+
+# Vite Configuration
+vite_pusher_app_key     = ""
+vite_pusher_host        = ""
+vite_pusher_port        = "443"
+vite_pusher_scheme      = "https"
+vite_pusher_app_cluster = "mt1"
