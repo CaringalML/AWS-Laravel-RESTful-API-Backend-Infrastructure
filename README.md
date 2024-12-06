@@ -184,22 +184,20 @@ If the ECR repository is already created, you should immediately push your Docke
 # Check if the repository exists
 aws ecr describe-repositories --repository-names student-enrollment-laravel-api
 
-# If it exists, immediately build and push the image:
-ECR_REPO=$(terraform output -raw repository_url)
-
 # Authenticate with ECR
-aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $ECR_REPO
+aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <account_id>.dkr.ecr.<region>.amazonaws.com
 
 # Build and push the image
-docker build -t $ECR_REPO:latest .
-docker push $ECR_REPO:latest
+docker build -t student-enrollment-laravel-api:latest --no-cache .
+docker tag student-enrollment-laravel-api:latest <account_id>.dkr.ecr.<region>.amazonaws.com/student-enrollment-laravel-api:latest
+docker push <account_id>.dkr.ecr.<region>.amazonaws.com/student-enrollment-laravel-api:latest
 ```
 
 ### Initial Setup
 1. Clone the repository:
 ```bash
-git clone [repository-url]
-cd [repository-name]
+git clone https://github.com/CaringalML/AWS-Laravel-RESTful-API-Backend-Infrastructure.git
+cd https://github.com/CaringalML/AWS-Laravel-RESTful-API-Backend-Infrastructure.git
 ```
 
 2. Configure AWS credentials:
