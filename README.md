@@ -181,6 +181,10 @@ Related Repositories:
 If the ECR repository is already created, you should immediately push your Docker image to prevent deployment issues. ECS tasks will fail to start if they cannot pull the specified image.
 
 ```bash
+
+#Configure AWS credentials
+aws configure
+
 # Check if the repository exists
 aws ecr describe-repositories --repository-names student-enrollment-laravel-api
 
