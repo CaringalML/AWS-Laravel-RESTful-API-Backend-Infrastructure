@@ -374,16 +374,6 @@ resource "aws_appautoscaling_policy" "memory" {
    - Deploy from latest ECR image
    - Restore configurations from Secrets Manager
 
-## Maintenance
-
-### Regular Updates
-1. Operating System Updates:
-   - Managed by AWS Fargate
-   - Regular security patches
-
-2. Database Maintenance:
-   - Automated minor version upgrades
-   - Scheduled maintenance window
 
 ### Application Updates
 1. Build and push new Docker image
