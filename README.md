@@ -242,6 +242,82 @@ terraform plan
 terraform apply 
 ```
 
+## CI/CD Pipeline
+
+### GitHub Actions Workflow
+
+The repository includes a GitHub Actions workflow that automates the Docker image build and push process to Amazon ECR. This significantly speeds up the deployment process and ensures consistency.
+
+```yaml
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Clear Composer Cache
+        run: composer clear-cache
+        
+      - name: Install Dependencies
+        run: |
+           composer install --prefer-dist --no-dev --no-interaction --no-progress --optimize-autoloader
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        run: |
+          aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 939737198590.dkr.ecr.ap-southeast-2.amazonaws.com
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t student-enrollment-laravel-api:latest --no-cache .
+          docker tag student-enrollment-laravel-api:latest 939737198590.dkr.ecr.ap-southeast-2.amazonaws.com/student-enrollment-laravel-api:latest
+          docker push 939737198590.dkr.ecr.ap-southeast-2.amazonaws.com/student-enrollment-laravel-api:latest
+```
+
+### CI/CD Prerequisites
+
+1. **GitHub Secrets Configuration**
+   - `AWS_ACCESS_KEY_ID`: Your AWS access key
+   - `AWS_SECRET_ACCESS_KEY`: Your AWS secret key
+
+2. **AWS ECR Repository**
+   - Ensure the ECR repository exists before the first workflow run
+   - Verify IAM permissions for pushing images
+
+### Automated Process
+
+The workflow automatically:
+1. Sets up PHP 8.2 environment
+2. Installs project dependencies
+3. Configures AWS credentials
+4. Logs in to Amazon ECR
+5. Builds and pushes the Docker image
+
+This automation replaces the manual Docker build and push process described in the Deployment Instructions section, saving time and reducing potential errors.
+
+
+
 ## Access and Security
 
 ### Domain and SSL
