@@ -234,12 +234,12 @@ terraform validate
 
 2. Review the infrastructure plan:
 ```bash
-terraform plan 
+terraform plan -out=tfplan 
 ```
 
 3. Apply the infrastructure:
 ```bash
-terraform apply 
+terraform apply tfplan
 ```
 
 ## CI/CD Pipeline
@@ -645,21 +645,6 @@ For support and questions, please:
    - Review slow queries
    - Optimize if needed
 
-### Common Maintenance Commands
-
-```bash
-# Update and deploy new container image
-ECR_REPO=$(terraform output -raw repository_url)
-docker build -t $ECR_REPO:latest .
-docker push $ECR_REPO:latest
-
-# Update infrastructure
-terraform plan -out=tfplan
-terraform apply tfplan
-
-# Check logs
-aws logs get-log-events --log-group-name /ecs/student-enrollment-laravel-api
-```
 
 ### Emergency Procedures
 
