@@ -2,6 +2,12 @@
 
 This repository contains the Terraform infrastructure code for deploying a highly available, scalable Laravel application on AWS ECS Fargate.
 
+Related Repositories:
+
+- Frontend Web Application: [CaringalML/Student-Enrollment-System-React](https://github.com/CaringalML/Student-Enrollment-System-React)
+- Backend Web Application: [CaringalML/Student-Enrollment-System-Laravel-API](https://github.com/CaringalML/Student-Enrollment-System-Laravel-API)
+
+
 ## Table of Contents
 - [Architecture Overview](#architecture-overview)
 - [Prerequisites](#prerequisites)
