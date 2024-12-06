@@ -542,6 +542,14 @@ For support and questions, please:
 3. Follow the issue template
 4. Provide relevant logs and configurations
 
+
+### Contact Information
+
+For support and assistance:
+- Technical Issues: lawrencecaringal5@gmail.com
+- Infrastructure Support: [GitHub Issues](https://github.com/CaringalML/AWS-Laravel-Backend-Infrastructure-Terraform/issues)
+
+
 ## License
 
 [MIT License](LICENSE)
