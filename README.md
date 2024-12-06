@@ -436,6 +436,84 @@ resource "aws_appautoscaling_policy" "memory" {
    - S3 bucket versioning
    - Disaster recovery testing
 
+
+## Infrastructure Variables
+
+### Required Variables
+| Variable Name | Description | Type | Default | Required |
+|--------------|-------------|------|---------|-----------|
+| `aws_region` | AWS region where resources will be created | `string` | `"ap-southeast-2"` | yes |
+| `environment` | Environment (e.g., production, staging) | `string` | n/a | yes |
+| `project_name` | Name of the project | `string` | n/a | yes |
+| `app_key` | Laravel application key | `string` | n/a | yes |
+| `db_password` | Database password | `string` | n/a | yes |
+| `aws_access_key_id` | AWS access key ID | `string` | n/a | yes |
+| `aws_secret_access_key` | AWS secret access key | `string` | n/a | yes |
+
+### Application Variables
+| Variable Name | Description | Type | Default | Required |
+|--------------|-------------|------|---------|-----------|
+| `app_name` | Laravel application name | `string` | `"Laravel"` | no |
+| `app_url` | Laravel application URL | `string` | `"http://127.0.0.1:8000"` | no |
+| `app_debug` | Laravel debug mode | `string` | `"false"` | no |
+| `log_channel` | Laravel log channel | `string` | `"stack"` | no |
+| `log_level` | Laravel log level | `string` | `"debug"` | no |
+
+### Database Variables
+| Variable Name | Description | Type | Default | Required |
+|--------------|-------------|------|---------|-----------|
+| `db_connection` | Database connection type | `string` | `"mysql"` | no |
+| `db_port` | Database port | `number` | `3306` | no |
+| `db_name` | Database name | `string` | `"collage"` | no |
+| `db_username` | Database username | `string` | `"admin"` | no |
+
+### Container Configuration
+| Variable Name | Description | Type | Default | Required |
+|--------------|-------------|------|---------|-----------|
+| `container_cpu` | CPU units for the container (1024 = 1 vCPU) | `number` | `1024` | no |
+| `container_memory` | Memory for the container in MiB | `number` | `2048` | no |
+| `container_port` | Port exposed by the container | `number` | `80` | no |
+
+### ECR Configuration
+| Variable Name | Description | Type | Default | Required |
+|--------------|-------------|------|---------|-----------|
+| `repository_name` | Name of the ECR repository | `string` | n/a | yes |
+| `image_tag_mutability` | The tag mutability setting for the repository | `string` | `"MUTABLE"` | no |
+| `scan_on_push` | Indicates whether images are scanned after being pushed | `bool` | `true` | no |
+| `max_image_count` | Maximum number of images to keep in the repository | `number` | `30` | no |
+
+### Cache and Session Configuration
+| Variable Name | Description | Type | Default | Required |
+|--------------|-------------|------|---------|-----------|
+| `redis_host` | Redis host | `string` | `"127.0.0.1"` | no |
+| `redis_port` | Redis port | `string` | `"6379"` | no |
+| `session_driver` | Laravel session driver | `string` | `"file"` | no |
+| `cache_driver` | Laravel cache driver | `string` | `"file"` | no |
+
+### Mail Configuration
+| Variable Name | Description | Type | Default | Required |
+|--------------|-------------|------|---------|-----------|
+| `mail_mailer` | Laravel mail mailer | `string` | `"smtp"` | no |
+| `mail_host` | Laravel mail host | `string` | `"mailpit"` | no |
+| `mail_port` | Laravel mail port | `string` | `"1025"` | no |
+| `mail_username` | Laravel mail username | `string` | `"null"` | no |
+| `mail_encryption` | Laravel mail encryption | `string` | `"null"` | no |
+
+### Tags
+| Variable Name | Description | Type | Default | Required |
+|--------------|-------------|------|---------|-----------|
+| `default_tags` | Default tags to apply to all resources | `map(string)` | See below | yes |
+
+Default tags structure:
+```hcl
+default_tags = {
+  Name        = "student-enrollment-laravel-api"
+  Environment = "production"
+  Project     = "student-enrollment"
+  Managed_by  = "terraform"
+}
+```
+
 ## Contributing
 
 ### Development Workflow
