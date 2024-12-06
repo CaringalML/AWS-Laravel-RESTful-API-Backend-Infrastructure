@@ -1,4 +1,4 @@
-# Student Enrollment System Infrastructure
+# AWS Backend Infrastructure for Student Enrollment System
 
 This repository contains the Terraform infrastructure code for deploying a highly available, scalable Laravel application on AWS ECS Fargate.
 
