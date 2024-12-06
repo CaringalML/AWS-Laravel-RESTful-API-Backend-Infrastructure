@@ -242,24 +242,6 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
-### Application Deployment
-1. Build the Docker image:
-```bash
-ECR_REPO=$(terraform output -raw repository_url)
-docker build -t $ECR_REPO:latest .
-```
-
-2. Authenticate with ECR:
-```bash
-aws ecr get-login-password --region ap-southeast-2 | \
-docker login --username AWS --password-stdin $ECR_REPO
-```
-
-3. Push the image:
-```bash
-docker push $ECR_REPO:latest
-```
-
 ## Access and Security
 
 ### Domain and SSL
