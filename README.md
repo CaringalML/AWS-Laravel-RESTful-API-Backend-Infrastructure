@@ -1,0 +1,463 @@
+# Student Enrollment System Infrastructure
+
+This repository contains the Terraform infrastructure code for deploying a highly available, scalable Laravel application on AWS ECS Fargate.
+
+## Table of Contents
+- [Architecture Overview](#architecture-overview)
+- [Prerequisites](#prerequisites)
+- [Repository Structure](#repository-structure)
+- [Deployment Instructions](#deployment-instructions)
+- [Infrastructure Components](#infrastructure-components)
+- [Access and Security](#access-and-security)
+- [Auto Scaling](#auto-scaling)
+- [Monitoring and Logging](#monitoring-and-logging)
+- [Cost Optimization](#cost-optimization)
+- [Disaster Recovery](#disaster-recovery)
+- [Maintenance](#maintenance)
+- [Troubleshooting](#troubleshooting)
+- [Best Practices](#best-practices)
+- [Performance Optimization](#performance-optimization)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Architecture Overview
+
+### Networking Layer
+- **VPC Configuration**:
+  - CIDR block: 192.168.0.0/24
+  - Region: ap-southeast-2 (Sydney)
+  - Availability Zones: ap-southeast-2a, ap-southeast-2b
+  
+- **Subnet Layout**:
+  - Public Subnet 1: 192.168.0.0/26 (ap-southeast-2a)
+  - Public Subnet 2: 192.168.0.64/26 (ap-southeast-2b)
+  - Private Subnet 1: 192.168.0.128/26 (ap-southeast-2a)
+  - Private Subnet 2: 192.168.0.192/26 (ap-southeast-2b)
+
+- **Network Components**:
+  - NAT Gateway in Public Subnet
+  - Internet Gateway for public access
+  - S3 VPC Endpoint for optimized access
+  - Route tables for public and private subnets
+
+### Compute Layer
+- **ECS Cluster Configuration**:
+  - Cluster Name: laravel-node
+  - Capacity Providers: FARGATE and FARGATE_SPOT
+  - Container Insights enabled
+
+- **ECS Service Settings**:
+  - Service Name: student-enrollment-service
+  - Desired Count: 2 (minimum)
+  - Maximum Count: 20
+  - Platform Version: LATEST
+  - Deployment Circuit Breaker enabled
+  - Rolling updates with force new deployment
+
+- **Task Definition Specifications**:
+  - CPU: 1024 (1 vCPU)
+  - Memory: 2048 MB (2GB)
+  - Operating System: Linux
+  - Architecture: X86_64
+
+### Database Layer
+- **RDS Configuration**:
+  - Engine: MySQL 8.0.35
+  - Instance Class: db.t3.micro
+  - Storage: 20GB gp2
+  - Backup Retention: 7 days
+  - Maintenance Window: Monday 04:00-05:00
+  - Backup Window: 03:00-04:00
+
+### Application Load Balancer
+- **ALB Configuration**:
+  - Scheme: internet-facing
+  - IP Address Type: ipv4
+  - HTTP/2 Enabled
+  - Access Logs Enabled
+
+- **Listener Configuration**:
+  - HTTP (Port 80) with redirect to HTTPS
+  - HTTPS (Port 443) with SSL/TLS certificate
+  - SSL Policy: ELBSecurityPolicy-TLS-1-2-2017-01
+
+### Container Registry
+- **ECR Repository**:
+  - Image Tag Mutability: Mutable
+  - Image Scanning: Enabled on push
+  - Encryption: AES-256
+  - Lifecycle Policy: Keep last 30 images
+
+## Prerequisites
+
+### AWS Account Requirements
+- IAM user with administrative privileges
+- Access Key and Secret Access Key
+- Quota limits checked for:
+  - VPCs
+  - ECS Services
+  - RDS Instances
+  - NAT Gateways
+  - Elastic IPs
+
+### Local Development Setup
+- AWS CLI version 2.0 or later
+- Terraform v1.0.0 or later
+- Docker version 20.10 or later
+- Git
+
+### Domain Requirements
+- Registered domain in Route 53
+- Ability to modify DNS records
+- SSL/TLS certificate requirements understood
+
+## Repository Structure
+
+```
+.
+├── acm.tf                    # ACM certificate configuration
+│   ├── Certificate creation
+│   ├── DNS validation
+│   └── Alternative names
+├── alb.tf                    # Application Load Balancer configuration
+│   ├── ALB creation
+│   ├── Target group
+│   ├── Listeners
+│   └── Rules
+├── cloudwatch.tf             # CloudWatch logs and metrics
+│   ├── Log groups
+│   └── Retention policies
+├── cluster.tf                # ECS cluster configuration
+│   ├── Cluster creation
+│   ├── Capacity providers
+│   └── Container insights
+├── ecr.tf                    # ECR repository configuration
+│   ├── Repository creation
+│   ├── Lifecycle policies
+│   └── Scanning configuration
+├── ecs-fargate-service.tf    # ECS service and auto-scaling
+│   ├── Service definition
+│   ├── Auto-scaling targets
+│   └── Scaling policies
+├── ecs-update-service.tf     # Service update automation
+│   ├── EventBridge rules
+│   ├── Lambda function
+│   └── IAM roles
+├── iam.tf                    # IAM roles and policies
+│   ├── Execution roles
+│   ├── Task roles
+│   └── Policy documents
+├── lambda/                   # Lambda function code
+│   └── update-ecs-service.py
+├── outputs.tf                # Terraform outputs
+├── rds-mysql.tf             # RDS instance configuration
+│   ├── Instance creation
+│   ├── Subnet groups
+│   └── Parameter groups
+├── route-53-dns-record.tf    # DNS configuration
+├── secrets.tf                # Secrets Manager configuration
+├── security-group.tf         # Security group definitions
+├── task-definition.tf        # ECS task definition
+├── terraform.tfvars          # Variable values
+├── variables.tf              # Variable declarations
+└── vpc.tf                    # VPC and networking
+```
+
+## Deployment Instructions
+
+### ⚠️ Important Reminder
+If the ECR repository is already created, you should immediately push your Docker image to prevent deployment issues. ECS tasks will fail to start if they cannot pull the specified image.
+
+```bash
+# Check if the repository exists
+aws ecr describe-repositories --repository-names student-enrollment-laravel-api
+
+# If it exists, immediately build and push the image:
+ECR_REPO=$(terraform output -raw repository_url)
+
+# Authenticate with ECR
+aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $ECR_REPO
+
+# Build and push the image
+docker build -t $ECR_REPO:latest .
+docker push $ECR_REPO:latest
+```
+
+### Initial Setup
+1. Clone the repository:
+```bash
+git clone [repository-url]
+cd [repository-name]
+```
+
+2. Configure AWS credentials:
+```bash
+aws configure
+```
+
+3. Initialize Terraform:
+```bash
+terraform init
+```
+
+### Configuration
+1. Create a `terraform.tfvars` file:
+```hcl
+aws_region = "ap-southeast-2"
+environment = "production"
+project_name = "student-enrollment"
+# Add other required variables
+```
+
+2. Review and modify variables in `variables.tf` as needed
+
+### Infrastructure Deployment
+1. Format and validate Terraform code:
+```bash
+terraform fmt
+terraform validate
+```
+
+2. Review the infrastructure plan:
+```bash
+terraform plan -out=tfplan
+```
+
+3. Apply the infrastructure:
+```bash
+terraform apply tfplan
+```
+
+### Application Deployment
+1. Build the Docker image:
+```bash
+ECR_REPO=$(terraform output -raw repository_url)
+docker build -t $ECR_REPO:latest .
+```
+
+2. Authenticate with ECR:
+```bash
+aws ecr get-login-password --region ap-southeast-2 | \
+docker login --username AWS --password-stdin $ECR_REPO
+```
+
+3. Push the image:
+```bash
+docker push $ECR_REPO:latest
+```
+
+## Access and Security
+
+### Domain and SSL
+- The application is accessible at `server.martincaringal.co.nz`
+- SSL/TLS certificate is automatically provisioned and renewed through ACM
+- HTTP traffic is automatically redirected to HTTPS
+
+### Database Access
+- RDS instance is only accessible from ECS tasks
+- Database credentials are stored in Secrets Manager
+- Regular automated backups are configured
+
+### Application Security
+- All sensitive environment variables are stored in Secrets Manager
+- Security groups are configured for minimum required access
+- Private subnets are used for ECS tasks and RDS
+
+## Infrastructure Components
+
+### Security Groups
+1. **ALB Security Group**:
+   - Inbound: 80, 443 from anywhere
+   - Outbound: All traffic
+
+2. **ECS Tasks Security Group**:
+   - Inbound: 80 from ALB
+   - Outbound: All traffic
+
+3. **RDS Security Group**:
+   - Inbound: 3306 from ECS Tasks
+   - Outbound: All traffic
+
+### IAM Roles and Policies
+1. **ECS Task Execution Role**:
+   - ECR access
+   - CloudWatch Logs access
+   - Secrets Manager access
+
+2. **ECS Task Role**:
+   - Application-specific permissions
+   - S3 access
+   - Systems Manager access
+
+3. **Lambda Execution Role**:
+   - ECS service update permissions
+   - CloudWatch Logs access
+
+### Auto-Scaling Policies
+
+#### CPU Based Scaling
+```hcl
+resource "aws_appautoscaling_policy" "cpu" {
+  name               = "cpu-auto-scaling"
+  policy_type        = "TargetTrackingScaling"
+  target_value       = 70
+  scale_in_cooldown  = 300
+  scale_out_cooldown = 60
+}
+```
+
+#### Memory Based Scaling
+```hcl
+resource "aws_appautoscaling_policy" "memory" {
+  name               = "memory-auto-scaling"
+  policy_type        = "TargetTrackingScaling"
+  target_value       = 80
+  scale_in_cooldown  = 300
+  scale_out_cooldown = 60
+}
+```
+
+## Monitoring and Logging
+
+### CloudWatch Integration
+- Container Insights enabled for ECS cluster
+- Application logs stored in CloudWatch Log Groups
+- Custom metrics for application monitoring
+- Automated alerts for critical events
+
+### Log Groups
+1. **Application Logs**:
+   - Group: `/ecs/student-enrollment-laravel-api`
+   - Retention: 30 days
+
+2. **ECS Cluster Logs**:
+   - Group: `/ecs/laravel-node`
+   - Container Insights metrics
+
+### Metrics and Alarms
+- CPU and Memory utilization
+- Request count and latency
+- Error rates and 5xx responses
+- Database connections and performance
+
+## Cost Optimization
+
+### Resource Optimization
+- Use of FARGATE_SPOT for cost savings
+- Auto-scaling based on demand
+- S3 VPC Endpoint for reduced data transfer costs
+
+### Monitoring and Control
+- Cost allocation tags
+- Budget alerts
+- Resource utilization tracking
+
+## Disaster Recovery
+
+### Backup Strategy
+- RDS automated backups (7-day retention)
+- Final snapshot on deletion
+- Infrastructure as Code for quick recovery
+
+### Recovery Procedures
+1. Database Recovery:
+   - Restore from latest backup
+   - Point-in-time recovery available
+   
+2. Application Recovery:
+   - Deploy from latest ECR image
+   - Restore configurations from Secrets Manager
+
+## Maintenance
+
+### Regular Updates
+1. Operating System Updates:
+   - Managed by AWS Fargate
+   - Regular security patches
+
+2. Database Maintenance:
+   - Automated minor version upgrades
+   - Scheduled maintenance window
+
+### Application Updates
+1. Build and push new Docker image
+2. Automated deployment via ECS
+3. Rolling updates with zero downtime
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+1. **ECS Service Not Stable**
+   - Check ECS service events
+   - Verify task definition
+   - Check container logs
+   - Validate security group rules
+
+2. **RDS Connectivity Issues**
+   - Verify security group rules
+   - Check subnet routing
+   - Validate credentials in Secrets Manager
+   - Review VPC endpoints
+
+3. **ALB Health Check Failures**
+   - Verify target group settings
+   - Check application health endpoint
+   - Review security group rules
+   - Inspect container logs
+
+## Best Practices
+
+### Security Best Practices
+1. **Network Security**:
+   - Use private subnets for sensitive components
+   - Implement network ACLs
+   - Enable VPC Flow Logs
+
+2. **Data Security**:
+   - Encrypt data at rest
+   - Use Secrets Manager for credentials
+   - Implement least privilege access
+
+### Operational Best Practices
+1. **Monitoring**:
+   - Set up CloudWatch alarms
+   - Configure metric filters
+   - Implement log analysis
+
+2. **Backup Strategy**:
+   - Regular RDS snapshots
+   - S3 bucket versioning
+   - Disaster recovery testing
+
+## Contributing
+
+### Development Workflow
+1. Fork the repository
+2. Create a feature branch
+3. Follow coding standards
+4. Write tests
+5. Submit pull request
+
+### Code Standards
+1. **Terraform**:
+   - Use consistent formatting
+   - Follow naming conventions
+   - Document all resources
+
+2. **Infrastructure**:
+   - Maintain high availability
+   - Implement security best practices
+   - Consider cost optimization
+
+## Support
+
+For support and questions, please:
+1. Check existing issues
+2. Create a new issue with details
+3. Follow the issue template
+4. Provide relevant logs and configurations
+
+## License
+
+[MIT License](LICENSE)
