@@ -646,6 +646,46 @@ For support and questions, please:
    - Optimize if needed
 
 
+### Deployment Results
+
+The following screenshots demonstrate the successful deployment of the infrastructure:
+
+#### AWS Console Views
+
+1. **ECS Cluster Overview**
+   ![ECS Cluster](deployment-images/ecs-cluster-service.png)
+   ![ECS Cluster](deployment-images/ecs-cluster-task.png)
+   - Shows the running ECS cluster with healthy tasks
+   - Demonstrates successful container deployments
+
+2. **Application Load Balancer**
+   ![ALB Configuration](deployment-images/alb-config.png)
+   ![ALB Configuration](deployment-images/target-groups.png)
+   - Displays the ALB configuration
+   - Shows healthy target groups
+
+3. **RDS Database Instance**
+   ![RDS Instance](deployment-images/rds-instance.png)
+   - Shows the running RDS instance
+   - Indicates successful database deployment
+
+#### Application Access
+
+4. **API Endpoint Access**
+   ![API Health Check](deployment-images/server.png)
+  ![API Health Check](deployment-images/api-endpoint.png)
+   - Accessible at: `https://server.martincaringal.co.nz`
+   - Shows successful SSL/TLS configuration
+   - Demonstrates API health check response
+
+5. **CloudWatch Monitoring**
+   ![CloudWatch Metrics](deployment-images/cloudwatch-metrics.png)
+   ![CloudWatch Metrics](deployment-images/cloudwatch-logs.png)
+   - Shows real-time monitoring metrics
+   - Demonstrates successful logging integration
+
+
+
 ### Emergency Procedures
 
 1. **Service Issues**
