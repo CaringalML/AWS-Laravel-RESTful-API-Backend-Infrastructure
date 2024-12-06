@@ -543,7 +543,85 @@ For support and questions, please:
 4. Provide relevant logs and configurations
 
 
-### Contact Information
+## Regular Maintenance
+
+### Daily Checks
+1. **Monitor Health**
+   - Check ECS service status in AWS Console
+   - Review any CloudWatch alarms
+   - Check RDS status
+   - Monitor application error logs
+
+2. **Security**
+   - Review any security alerts
+   - Check for failed login attempts
+   - Monitor unusual traffic patterns
+
+### Weekly Tasks
+1. **Performance**
+   - Review CloudWatch metrics
+   - Check container resource usage
+   - Monitor database performance
+
+2. **Backups**
+   - Verify RDS backups completed
+   - Check ECR image backups
+   - Test a backup if needed
+
+3. **Costs**
+   - Review AWS costs
+   - Check for unused resources
+   - Monitor resource usage
+
+### Monthly Tasks
+1. **Updates**
+   - Update Terraform if needed
+   - Check for AWS service updates
+   - Review and update documentation
+
+2. **Security**
+   - Rotate credentials if needed
+   - Review security groups
+   - Check SSL certificates
+
+3. **Database**
+   - Check storage usage
+   - Review slow queries
+   - Optimize if needed
+
+### Common Maintenance Commands
+
+```bash
+# Update and deploy new container image
+ECR_REPO=$(terraform output -raw repository_url)
+docker build -t $ECR_REPO:latest .
+docker push $ECR_REPO:latest
+
+# Update infrastructure
+terraform plan -out=tfplan
+terraform apply tfplan
+
+# Check logs
+aws logs get-log-events --log-group-name /ecs/student-enrollment-laravel-api
+```
+
+### Emergency Procedures
+
+1. **Service Issues**
+   - Check ECS service logs
+   - Review recent changes
+   - Rollback if needed
+   - Document the incident
+
+2. **Database Issues**
+   - Check RDS metrics
+   - Review error logs
+   - Restore from backup if needed
+   - Contact AWS support if required
+
+### Maintenance Contacts
+
+- AWS Support: https://support.aws.amazon.com
 
 For support and assistance:
 - Technical Issues: lawrencecaringal5@gmail.com
