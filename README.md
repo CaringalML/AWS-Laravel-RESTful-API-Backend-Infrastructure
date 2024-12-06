@@ -88,6 +88,12 @@ This repository contains the Terraform infrastructure code for deploying a highl
   - Encryption: AES-256
   - Lifecycle Policy: Keep last 30 images
 
+
+  ### Infrastructure Diagram
+
+![AWS Infrastructure Diagram](backend-infra.png)
+
+
 ## Prerequisites
 
 ### AWS Account Requirements
