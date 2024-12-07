@@ -235,12 +235,12 @@ terraform validate
 
 2. Review the infrastructure plan:
 ```bash
-terraform plan -out=tfplan 
+terraform plan  
 ```
 
 3. Apply the infrastructure:
 ```bash
-terraform apply tfplan
+terraform apply 
 ```
 
 ## CI/CD Pipeline
