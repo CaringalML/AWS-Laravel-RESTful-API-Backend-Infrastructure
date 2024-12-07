@@ -36,11 +36,11 @@ db_connection = "mysql"
 db_port      = 3306
 db_name      = "collage"
 db_username  = "admin"
-db_password  = "MLCcaringal000"
+db_password  = " "
 
 # Laravel Environment Variables
 app_name     = "Laravel"
-app_key      = "base64:q2ktJOez5JCl9ON6bU18DBxCofhalJth5oQK9c1mAy0="
+app_key      = " "
 app_url      = "http://127.0.0.1:8000"
 app_debug    = "false"
 
@@ -76,8 +76,8 @@ mail_from_address = "hello@example.com"
 mail_from_name   = "Laravel"
 
 # AWS S3 Configuration
-aws_access_key_id     = "AKIA5VTFTV77MOINUVSC"
-aws_secret_access_key = "eeBUTtbSmovqoLBV/roYzMcvjKUAQ7lVVnUc8As8"
+aws_access_key_id     = " "
+aws_secret_access_key = " "
 aws_bucket            = "caringaldevops"
 aws_use_path_style_endpoint = "false"
 
