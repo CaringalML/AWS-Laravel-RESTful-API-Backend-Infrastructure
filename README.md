@@ -674,12 +674,14 @@ The following screenshots demonstrate the successful deployment of the infrastru
 
 4. **API Endpoint Access**
    ![API Health Check](deployment-images/server.png)
-  ![API Health Check](deployment-images/api-endpoint.png)
+   ![API Health Check](deployment-images/api-endpoint.png)
+   ![API Health Check](deployment-images/acm.png)
+   ![API Health Check](deployment-images/api-endpoint.png)
    - Accessible at: `https://server.martincaringal.co.nz`
    - Shows successful SSL/TLS configuration
    - Demonstrates API health check response
 
-5. **CloudWatch Monitoring**
+6. **CloudWatch Monitoring**
    ![CloudWatch Metrics](deployment-images/cloudwatch-metrics.png)
    ![CloudWatch Metrics](deployment-images/cloudwatch-logs.png)
    - Shows real-time monitoring metrics
