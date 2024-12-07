@@ -292,8 +292,8 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker build -t student-enrollment-laravel-api:latest --no-cache .
-          docker tag student-enrollment-laravel-api:latest 939737198590.dkr.ecr.ap-southeast-2.amazonaws.com/student-enrollment-laravel-api:latest
-          docker push 939737198590.dkr.ecr.ap-southeast-2.amazonaws.com/student-enrollment-laravel-api:latest
+          docker tag student-enrollment-laravel-api:latest <account_id>.dkr.ecr.<region>.amazonaws.com/student-enrollment-laravel-api:latest
+          docker push <account_id>.dkr.ecr.<region>.amazonaws.com/student-enrollment-laravel-api:latest
 ```
 
 ### CI/CD Prerequisites
