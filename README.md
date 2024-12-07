@@ -681,7 +681,7 @@ The following screenshots demonstrate the successful deployment of the infrastru
    - Shows successful SSL/TLS configuration
    - Demonstrates API health check response
 
-5. **CloudWatch Monitoring**
+6. **CloudWatch Monitoring**
    ![CloudWatch Metrics](deployment-images/cloudwatch-metrics.png)
    ![CloudWatch Metrics](deployment-images/cloudwatch-logs.png)
    - Shows real-time monitoring metrics
